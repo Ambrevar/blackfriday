@@ -20,6 +20,11 @@ import (
 	"path/filepath"
 )
 
+// LaTeX renderer configuration options.
+const (
+	LATEX_TOC = 1 << iota // generate a table of contents
+)
+
 // Latex is a type that implements the Renderer interface for LaTeX output.
 //
 // Do not create this directly, instead use the LatexRenderer function.
@@ -32,10 +37,9 @@ type Latex struct {
 // LatexRenderer creates and configures a Latex object, which
 // satisfies the Renderer interface.
 //
-// flags is a set of LATEX_* options ORed together (currently no such options
-// are defined).
+// flags is a set of LATEX_* options.
 func LatexRenderer(flags int, title, author string) Renderer {
-	return &Latex{title: title, author: author}
+	return &Latex{flags, title, author}
 }
 
 func (options *Latex) GetFlags() int {
@@ -64,6 +68,13 @@ func (options *Latex) BlockCode(out *bytes.Buffer, text []byte, lang string) {
 func (options *Latex) TitleBlock(out *bytes.Buffer, text []byte) {
 	if options.title != "" {
 		out.WriteString("\\maketitle\n")
+	}
+	if options.flags&LATEX_TOC != 0 {
+		out.WriteString(`\vfill
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+`)
 	}
 }
 
