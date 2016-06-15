@@ -17,6 +17,7 @@ package blackfriday
 
 import (
 	"bytes"
+	"path/filepath"
 )
 
 // Latex is a type that implements the Renderer interface for LaTeX output.
@@ -211,6 +212,15 @@ func (options *Latex) Emphasis(out *bytes.Buffer, text []byte) {
 	out.WriteString("}")
 }
 
+// StripExt returns s without its extension.
+func StripExt(s string) string {
+	e := filepath.Ext(s)
+	if len(e) > 0 {
+		return s[:len(s)-len(e)]
+	}
+	return s
+}
+
 func (options *Latex) Image(out *bytes.Buffer, link []byte, title []byte, alt []byte) {
 	if bytes.HasPrefix(link, []byte("http://")) || bytes.HasPrefix(link, []byte("https://")) {
 		// treat it like a link
@@ -221,7 +231,9 @@ func (options *Latex) Image(out *bytes.Buffer, link []byte, title []byte, alt []
 		out.WriteString("}")
 	} else {
 		out.WriteString("\\includegraphics{")
-		out.Write(link)
+		// LaTeX will guess the extension from the most appropriate format. It is
+		// convenient to remove it as Markdown may use a different format.
+		out.Write([]byte(StripExt(string(link))))
 		out.WriteString("}")
 	}
 }
