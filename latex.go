@@ -299,32 +299,44 @@ func (options *Latex) NormalText(out *bytes.Buffer, text []byte) {
 
 // header and footer
 func (options *Latex) DocumentHeader(out *bytes.Buffer) {
-	out.WriteString("\\documentclass{article}\n")
-	out.WriteString("\n")
-	out.WriteString("\\usepackage{graphicx}\n")
-	out.WriteString("\\usepackage{listings}\n")
-	out.WriteString("\\usepackage[margin=1in]{geometry}\n")
-	out.WriteString("\\usepackage[utf8]{inputenc}\n")
-	out.WriteString("\\usepackage{verbatim}\n")
-	out.WriteString("\\usepackage[normalem]{ulem}\n")
-	out.WriteString("\\usepackage{hyperref}\n")
-	out.WriteString("\n")
-	out.WriteString("\\hypersetup{colorlinks,%\n")
-	out.WriteString("  citecolor=black,%\n")
-	out.WriteString("  filecolor=black,%\n")
-	out.WriteString("  linkcolor=black,%\n")
-	out.WriteString("  urlcolor=black,%\n")
-	out.WriteString("  pdfstartview=FitH,%\n")
-	out.WriteString("  breaklinks=true,%\n")
-	out.WriteString("  pdfauthor={Blackfriday Markdown Processor v")
-	out.WriteString(VERSION)
-	out.WriteString("}}\n")
-	out.WriteString("\n")
-	out.WriteString("\\newcommand{\\HRule}{\\rule{\\linewidth}{0.5mm}}\n")
-	out.WriteString("\\addtolength{\\parskip}{0.5\\baselineskip}\n")
-	out.WriteString("\\parindent=0pt\n")
-	out.WriteString("\n")
-	out.WriteString("\\begin{document}\n")
+	out.WriteString(`\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{marvosym}
+\usepackage{textcomp}
+\DeclareUnicodeCharacter{20AC}{\EUR{}}
+\DeclareUnicodeCharacter{2260}{\neq}
+\DeclareUnicodeCharacter{2264}{\leq}
+\DeclareUnicodeCharacter{2265}{\geq}
+\DeclareUnicodeCharacter{22C5}{\cdot}
+\DeclareUnicodeCharacter{A0}{~}
+\DeclareUnicodeCharacter{B1}{\pm}
+\DeclareUnicodeCharacter{D7}{\times}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage[margin=1in]{geometry}
+\usepackage{verbatim}
+\usepackage[normalem]{ulem}
+\usepackage{hyperref}
+
+\hypersetup{colorlinks,%
+  citecolor=black,%
+  filecolor=black,%
+  linkcolor=black,%
+  urlcolor=black,%
+  pdfstartview=FitH,%
+  breaklinks=true,%
+  pdfauthor={Blackfriday Markdown Processor v` + VERSION + `}}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\addtolength{\parskip}{0.5\baselineskip}
+\parindent=0pt
+
+\begin{document}
+`)
 }
 
 func (options *Latex) DocumentFooter(out *bytes.Buffer) {
