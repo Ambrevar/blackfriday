@@ -24,6 +24,9 @@ import (
 //
 // Do not create this directly, instead use the LatexRenderer function.
 type Latex struct {
+	flags  int
+	title  string
+	author string
 }
 
 // LatexRenderer creates and configures a Latex object, which
@@ -31,8 +34,8 @@ type Latex struct {
 //
 // flags is a set of LATEX_* options ORed together (currently no such options
 // are defined).
-func LatexRenderer(flags int) Renderer {
-	return &Latex{}
+func LatexRenderer(flags int, title, author string) Renderer {
+	return &Latex{title: title, author: author}
 }
 
 func (options *Latex) GetFlags() int {
@@ -56,8 +59,12 @@ func (options *Latex) BlockCode(out *bytes.Buffer, text []byte, lang string) {
 	}
 }
 
+// LaTeX' title must be set from the preamble, but this function is called after
+// DocumentHeader has been rendered. We use the title option instead.
 func (options *Latex) TitleBlock(out *bytes.Buffer, text []byte) {
-
+	if options.title != "" {
+		out.WriteString("\\maketitle\n")
+	}
 }
 
 func (options *Latex) BlockQuote(out *bytes.Buffer, text []byte) {
@@ -333,6 +340,13 @@ func (options *Latex) DocumentHeader(out *bytes.Buffer) {
 \usepackage{verbatim}
 \usepackage[normalem]{ulem}
 \usepackage{hyperref}
+
+\title{`)
+	options.NormalText(out, []byte(options.title))
+	out.WriteString(`}
+\author{`)
+	options.NormalText(out, []byte(options.author))
+	out.WriteString(`}
 
 \hypersetup{colorlinks,%
   citecolor=black,%
