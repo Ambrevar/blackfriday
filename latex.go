@@ -29,17 +29,18 @@ const (
 //
 // Do not create this directly, instead use the LatexRenderer function.
 type Latex struct {
-	flags  int
-	title  string
-	author string
+	flags    int
+	title    string
+	author   string
+	preamble string // document header
 }
 
 // LatexRenderer creates and configures a Latex object, which
 // satisfies the Renderer interface.
 //
 // flags is a set of LATEX_* options.
-func LatexRenderer(flags int, title, author string) Renderer {
-	return &Latex{flags, title, author}
+func LatexRenderer(flags int, title, author, preamble string) Renderer {
+	return &Latex{flags, title, author, preamble}
 }
 
 func (options *Latex) GetFlags() int {
@@ -329,7 +330,8 @@ func (options *Latex) NormalText(out *bytes.Buffer, text []byte) {
 
 // header and footer
 func (options *Latex) DocumentHeader(out *bytes.Buffer) {
-	out.WriteString(`\documentclass{article}
+	if options.preamble == "" {
+		out.WriteString(`\documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -353,11 +355,11 @@ func (options *Latex) DocumentHeader(out *bytes.Buffer) {
 \usepackage{hyperref}
 
 \title{`)
-	options.NormalText(out, []byte(options.title))
-	out.WriteString(`}
+		options.NormalText(out, []byte(options.title))
+		out.WriteString(`}
 \author{`)
-	options.NormalText(out, []byte(options.author))
-	out.WriteString(`}
+		options.NormalText(out, []byte(options.author))
+		out.WriteString(`}
 
 \hypersetup{colorlinks,%
   citecolor=black,%
@@ -374,6 +376,10 @@ func (options *Latex) DocumentHeader(out *bytes.Buffer) {
 
 \begin{document}
 `)
+		return
+	}
+
+	out.WriteString(options.preamble)
 }
 
 func (options *Latex) DocumentFooter(out *bytes.Buffer) {
