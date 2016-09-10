@@ -5,6 +5,10 @@
 // Distributed under the Simplified BSD License.
 // See README.md for details.
 
+// Package blackfriday is a markdown processor.
+//
+// Translates plain text with simple formatting rules into an intermediate
+// representation that can be rendered to HTML and other formats.
 package blackfriday
 
 import (
@@ -153,7 +157,8 @@ var blockTags = map[string]struct{}{
 // If the callback returns false, the rendering function should reset the
 // output buffer as though it had never been called.
 //
-// Currently HTML and Latex implementations are provided
+// Only an HTML implementation is provided in this repository,
+// see the README for external implementations.
 type Renderer interface {
 	Render(ast *Node) []byte
 	RenderNode(w io.Writer, node *Node, entering bool) WalkStatus
@@ -327,8 +332,7 @@ func MarkdownCommon(input []byte) []byte {
 // The supplied Renderer is used to format the output, and extensions dictates
 // which non-standard extensions are enabled.
 //
-// To use the supplied HTML or LaTeX renderers, see NewHTMLRenderer and
-// NewLatexRenderer, respectively.
+// To use the supplied HTML renderer, see NewHTMLRenderer.
 func Markdown(input []byte, renderer Renderer, options Options) []byte {
 	if renderer == nil {
 		return nil
